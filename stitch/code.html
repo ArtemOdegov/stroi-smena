@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Строй-Смена | Авторизация</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary-fixed": "#cce5ff",
+                    "on-error-container": "#93000a",
+                    "error-container": "#ffdad6",
+                    "tertiary-container": "#af6100",
+                    "surface-container-high": "#e8e8e8",
+                    "error": "#ba1a1a",
+                    "outline": "#6f7881",
+                    "on-primary-container": "#fdfcff",
+                    "surface-bright": "#f9f9f9",
+                    "background": "#f9f9f9",
+                    "inverse-surface": "#2f3131",
+                    "secondary-container": "#bddefd",
+                    "on-tertiary-fixed-variant": "#6d3a00",
+                    "tertiary-fixed-dim": "#ffb77a",
+                    "on-primary": "#ffffff",
+                    "surface-dim": "#dadada",
+                    "primary-fixed-dim": "#92ccff",
+                    "primary-container": "#007bb9",
+                    "on-primary-fixed-variant": "#004b73",
+                    "on-tertiary-container": "#fffbff",
+                    "on-secondary-fixed-variant": "#294a63",
+                    "on-surface-variant": "#3f4850",
+                    "primary": "#006193",
+                    "surface-container-lowest": "#ffffff",
+                    "on-tertiary": "#ffffff",
+                    "inverse-primary": "#92ccff",
+                    "on-background": "#1a1c1c",
+                    "on-secondary-fixed": "#001d31",
+                    "surface-variant": "#e2e2e2",
+                    "secondary-fixed-dim": "#aacae9",
+                    "surface-container-low": "#f3f3f3",
+                    "on-secondary-container": "#43627d",
+                    "secondary": "#42617c",
+                    "surface-container": "#eeeeee",
+                    "on-tertiary-fixed": "#2e1500",
+                    "surface": "#f9f9f9",
+                    "inverse-on-surface": "#f1f1f1",
+                    "secondary-fixed": "#cce5ff",
+                    "tertiary-fixed": "#ffdcc2",
+                    "on-primary-fixed": "#001d31",
+                    "on-secondary": "#ffffff",
+                    "on-error": "#ffffff",
+                    "surface-container-highest": "#e2e2e2",
+                    "outline-variant": "#bfc7d2",
+                    "on-surface": "#1a1c1c",
+                    "surface-tint": "#006497",
+                    "tertiary": "#8b4c00"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Manrope"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f9f9f9;
+        }
+        .headline-font {
+            font-family: 'Manrope', sans-serif;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-surface text-on-surface min-h-screen flex flex-col items-center justify-center p-6">
+<!-- Auth Container -->
+<main class="w-full max-w-md flex flex-col items-center">
+<!-- Brand Header (TopAppBar Context but suppressed for Auth as per mandate) -->
+<div class="mb-12 text-center">
+<div class="inline-flex items-center justify-center w-20 h-20 bg-primary-container rounded-xl mb-6 shadow-sm overflow-hidden">
+<img alt="ConstructFlow Logo" class="w-full h-full object-cover" data-alt="abstract architectural blueprint lines forming a geometric stylized crane in high-contrast white on a deep navy blue background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAVfo2nAOmWtdZ0351ddN4tkRU8mVPDCPKPO6haHpgYs92YHVH52ekw2lRo3KPIPhhxL-4XXYAfsp2IY7jUrZg2Q9sE_RgtbXgUZGPFKToS3xUeO-Ci_YuZLkUPUYiB--4qDetmSJNFLPiaU7vSh8ys0cue8c8VzXKTKEDp6x6rc4S3xFT8_uUklKPkjRDmWsMZvHj5sUijgVk0lPvpbTLJl0nxMZCe6zZ5vRmMYz3_wlgiQkgHMIu5-wYApHkVVe_CJa9kBpc4R6Q"/>
+</div>
+<h1 class="headline-font text-4xl font-extrabold tracking-tight text-primary mb-2">Строй-Смена</h1>
+<p class="text-on-surface-variant font-medium">Архитектурный пульс вашего строительства</p>
+</div>
+<!-- Input Section -->
+<div class="w-full space-y-4">
+<!-- Dynamic Input Pill -->
+<div class="space-y-4"><div class="relative group"><div class="absolute inset-y-0 left-5 flex items-center pointer-events-none text-outline"><span class="material-symbols-outlined">person</span></div><input class="w-full pl-14 pr-6 py-4 bg-surface-container-lowest border-none rounded-xl text-on-surface placeholder:text-outline focus:ring-2 focus:ring-primary/20 transition-all shadow-sm" placeholder="Логин" type="text"/></div><div class="relative group"><div class="absolute inset-y-0 left-5 flex items-center pointer-events-none text-outline"><span class="material-symbols-outlined">lock</span></div><input class="w-full pl-14 pr-6 py-4 bg-surface-container-lowest border-none rounded-xl text-on-surface placeholder:text-outline focus:ring-2 focus:ring-primary/20 transition-all shadow-sm" placeholder="Пароль" type="password"/></div></div>
+<!-- Login CTA (Primary) -->
+<button class="w-full py-4 bg-primary text-on-primary font-bold rounded-xl shadow-lg hover:brightness-110 active:scale-95 transition-all duration-150 flex items-center justify-center gap-2">Войти <span class="material-symbols-outlined text-[20px]">arrow_forward</span></button>
+<!-- Separation via Spatial Rhythm (No Lines) -->
+<div class="pt-8 pb-4 text-center">
+<p class="text-sm font-medium text-on-surface-variant uppercase tracking-widest headline-font">ВПЕРВЫЕ В СТРОЙ-СМЕНЕ?</p>
+</div>
+<!-- Secondary Actions Stack -->
+<div class="grid grid-cols-1 gap-3 w-full">
+<!-- Create Company -->
+<button class="w-full py-4 bg-surface-container-low text-primary font-bold rounded-xl hover:bg-surface-container-high active:scale-95 transition-all duration-150 flex items-center justify-center gap-3"><span class="material-symbols-outlined">business</span> Создать компанию</button>
+<!-- Enter Invite Code -->
+<button class="w-full py-4 bg-surface-container-lowest border-2 border-primary/5 text-secondary font-bold rounded-xl hover:bg-surface-container-low active:scale-95 transition-all duration-150 flex items-center justify-center gap-3"><span class="material-symbols-outlined">vpn_key</span> Ввести код приглашения</button>
+</div>
+</div>
+<!-- Footer Legal/Info -->
+<footer class="mt-16 text-center space-y-4">
+<p class="text-xs text-outline leading-relaxed max-w-[280px] mx-auto">Продолжая, вы соглашаетесь с нашими <span class="text-primary font-semibold">Условиями использования</span> и <span class="text-primary font-semibold">Политикой конфиденциальности</span>.</p>
+<div class="flex justify-center gap-6">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]" data-icon="public">public</span>
+<span class="text-[11px] font-bold uppercase tracking-wider">РУССКИЙ</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]" data-icon="help">help</span>
+<span class="text-[11px] font-bold uppercase tracking-wider">ПОДДЕРЖКА</span>
+</div>
+</div>
+</footer>
+</main>
+<!-- Visual Texture Layer (Glass & Gradient) -->
+<div class="fixed top-0 right-0 -z-10 w-1/2 h-1/2 bg-gradient-to-br from-primary/5 to-transparent blur-[120px] pointer-events-none"></div>
+<div class="fixed bottom-0 left-0 -z-10 w-1/2 h-1/2 bg-gradient-to-tr from-tertiary/5 to-transparent blur-[120px] pointer-events-none"></div>
+</body></html>

@@ -49,7 +49,8 @@
         {
           "locationWhenInUsePermission": "Геолокация для автоматической отметки."
         }
-      ]
+      ],
+      "expo-font"
     ],
     "extra": {
       "apiUrl": "http://127.0.0.1:3000"

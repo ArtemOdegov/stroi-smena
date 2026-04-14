@@ -1,6 +1,17 @@
 import React, { useEffect } from 'react';
+import { View, ActivityIndicator } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { NavigationContainer, DarkTheme } from '@react-navigation/native';
+import { useFonts } from 'expo-font';
+import {
+  Manrope_700Bold,
+  Manrope_800ExtraBold,
+} from '@expo-google-fonts/manrope';
+import {
+  Inter_400Regular,
+  Inter_500Medium,
+  Inter_600SemiBold,
+} from '@expo-google-fonts/inter';
+import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import NetInfo from '@react-native-community/netinfo';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -20,9 +31,9 @@ import { colors } from './src/theme';
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const navTheme = {
-  ...DarkTheme,
+  ...DefaultTheme,
   colors: {
-    ...DarkTheme.colors,
+    ...DefaultTheme.colors,
     primary: colors.primary,
     background: colors.bg,
     card: colors.card,
@@ -59,12 +70,12 @@ function NavigationRoot() {
         <Stack.Screen
           name="Login"
           component={LoginScreen}
-          options={{ title: 'Вход' }}
+          options={{ headerShown: false }}
         />
         <Stack.Screen
           name="Register"
           component={RegisterScreen}
-          options={{ title: 'Регистрация' }}
+          options={{ headerShown: false }}
         />
         <Stack.Screen
           name="Home"
@@ -102,6 +113,29 @@ function NavigationRoot() {
 }
 
 export default function App() {
+  const [fontsLoaded] = useFonts({
+    Manrope_800ExtraBold,
+    Manrope_700Bold,
+    Inter_400Regular,
+    Inter_500Medium,
+    Inter_600SemiBold,
+  });
+
+  if (!fontsLoaded) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: colors.bg,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <ActivityIndicator size="large" color={colors.primary} />
+      </View>
+    );
+  }
+
   return (
     <SafeAreaProvider>
       <SessionProvider>
