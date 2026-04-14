@@ -1,0 +1,176 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum MembershipRole {
+  DIRECTOR
+  EMPLOYEE
+}
+
+enum MembershipStatus {
+  ACTIVE
+  PENDING
+  INACTIVE
+}
+
+enum GeoSource {
+  MANUAL
+  AUTO
+}
+
+enum ConversationType {
+  COMPANY
+  DIRECT
+}
+
+model User {
+  id           String       @id @default(uuid())
+  email        String       @unique
+  passwordHash String       @map("password_hash")
+  name         String
+  createdAt    DateTime     @default(now()) @map("created_at")
+  updatedAt    DateTime     @updatedAt @map("updated_at")
+  memberships Membership[]
+  ownedCompanies Company[] @relation("CompanyOwner")
+  messages     Message[]
+  dayEntries   DayEntry[]
+  inviteRedemptions InviteRedemption[]
+}
+
+model Company {
+  id        String   @id @default(uuid())
+  name      String
+  ownerId   String   @map("owner_id")
+  owner     User     @relation("CompanyOwner", fields: [ownerId], references: [id])
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  memberships   Membership[]
+  inviteCodes   InviteCode[]
+  dayEntries    DayEntry[]
+  conversations Conversation[]
+}
+
+model InviteCode {
+  id        String    @id @default(uuid())
+  code      String    @unique
+  companyId String    @map("company_id")
+  company   Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  active    Boolean   @default(true)
+  expiresAt DateTime? @map("expires_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  redemptions InviteRedemption[]
+}
+
+model InviteRedemption {
+  id           String   @id @default(uuid())
+  inviteCodeId String   @map("invite_code_id")
+  inviteCode   InviteCode @relation(fields: [inviteCodeId], references: [id], onDelete: Cascade)
+  userId       String   @map("user_id")
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@unique([inviteCodeId, userId])
+}
+
+model Membership {
+  id        String            @id @default(uuid())
+  userId    String            @map("user_id")
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  companyId String            @map("company_id")
+  company   Company           @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  role      MembershipRole
+  status    MembershipStatus  @default(ACTIVE)
+  createdAt DateTime          @default(now()) @map("created_at")
+  updatedAt DateTime          @updatedAt @map("updated_at")
+
+  @@unique([userId, companyId])
+  @@index([companyId])
+}
+
+model DayEntry {
+  id               String    @id @default(uuid())
+  companyId        String    @map("company_id")
+  company          Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  userId           String    @map("user_id")
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date             DateTime  @db.Date
+  notes            String    @default("")
+  version          Int       @default(1)
+  clientMutationId String?   @unique @map("client_mutation_id")
+  lat              Float?
+  lng              Float?
+  geoAccuracy      Float?    @map("geo_accuracy")
+  geoSource        GeoSource? @map("geo_source")
+  geoCapturedAt    DateTime? @map("geo_captured_at")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+
+  photos DayEntryPhoto[]
+
+  @@unique([userId, companyId, date])
+  @@index([companyId, date])
+}
+
+model DayEntryPhoto {
+  id         String   @id @default(uuid())
+  dayEntryId String   @map("day_entry_id")
+  dayEntry   DayEntry @relation(fields: [dayEntryId], references: [id], onDelete: Cascade)
+  storageKey String   @map("storage_key")
+  url        String?
+  sortOrder  Int      @default(0) @map("sort_order")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@index([dayEntryId])
+}
+
+model Conversation {
+  id        String             @id @default(uuid())
+  companyId String             @map("company_id")
+  company   Company            @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  type      ConversationType
+  /// For DIRECT: stable key `${minUserId}:${maxUserId}` within company; null for COMPANY
+  directKey String?            @map("direct_key")
+  title     String?
+  createdAt DateTime           @default(now()) @map("created_at")
+  updatedAt DateTime           @updatedAt @map("updated_at")
+
+  members  ConversationMember[]
+  messages Message[]
+
+  @@unique([companyId, directKey])
+  @@index([companyId, type])
+}
+
+model ConversationMember {
+  id             String       @id @default(uuid())
+  conversationId String       @map("conversation_id")
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  userId         String       @map("user_id")
+  peerUserId     String?      @map("peer_user_id")
+  lastReadAt     DateTime?    @map("last_read_at")
+  joinedAt       DateTime     @default(now()) @map("joined_at")
+
+  @@unique([conversationId, userId])
+  @@index([userId])
+}
+
+model Message {
+  id             String       @id @default(uuid())
+  conversationId String       @map("conversation_id")
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  senderId       String       @map("sender_id")
+  sender         User         @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  body           String       @default("")
+  attachmentUrl  String?      @map("attachment_url")
+  attachmentType String?      @map("attachment_type")
+  createdAt      DateTime     @default(now()) @map("created_at")
+
+  @@index([conversationId, createdAt])
+}
