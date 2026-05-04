@@ -2,8 +2,8 @@ import { IsIn, IsOptional } from 'class-validator';
 
 export class UpdateMemberDto {
   @IsOptional()
-  @IsIn(['DIRECTOR', 'EMPLOYEE'])
-  role?: 'DIRECTOR' | 'EMPLOYEE';
+  @IsIn(['DIRECTOR', 'MASTER', 'EMPLOYEE'])
+  role?: 'DIRECTOR' | 'MASTER' | 'EMPLOYEE';
 
   @IsOptional()
   @IsIn(['ACTIVE', 'PENDING', 'INACTIVE'])

@@ -8,6 +8,7 @@ import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../prisma/prisma.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { RegisterPushTokenDto } from './dto/register-push-token.dto';
 
 export type JwtPayload = { sub: string; email: string };
 
@@ -66,6 +67,25 @@ export class AuthService {
       throw new UnauthorizedException('User not found');
     }
     return this.issueTokens(user.id, user.email);
+  }
+
+  async registerPushToken(userId: string, dto: RegisterPushTokenDto) {
+    const kind = dto.tokenKind ?? 'fcm';
+    await this.prisma.pushToken.upsert({
+      where: { token: dto.token },
+      create: {
+        userId,
+        token: dto.token,
+        tokenKind: kind,
+        platform: dto.platform ?? null,
+      },
+      update: {
+        userId,
+        tokenKind: kind,
+        platform: dto.platform ?? null,
+      },
+    });
+    return { ok: true as const };
   }
 
   private async issueTokens(userId: string, email: string) {

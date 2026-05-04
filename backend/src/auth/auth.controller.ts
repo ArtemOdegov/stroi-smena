@@ -3,6 +3,7 @@ import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { RefreshDto } from './dto/refresh.dto';
+import { RegisterPushTokenDto } from './dto/register-push-token.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { CurrentUser, AuthUser } from '../common/decorators/current-user.decorator';
 
@@ -29,5 +30,14 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   me(@CurrentUser() user: AuthUser) {
     return { userId: user.userId, email: user.email, name: user.name };
+  }
+
+  @Post('push-token')
+  @UseGuards(JwtAuthGuard)
+  registerPushToken(
+    @CurrentUser() user: AuthUser,
+    @Body() dto: RegisterPushTokenDto,
+  ) {
+    return this.auth.registerPushToken(user.userId, dto);
   }
 }

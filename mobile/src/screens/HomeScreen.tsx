@@ -10,24 +10,21 @@ import {
   RefreshControl,
   Platform,
 } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import {
-  createCompany,
-  joinCompany,
-  listMyCompanies,
-  type CompanyRow,
-} from '../api/companies';
+import { joinCompany, listMyCompanies, type CompanyRow } from '../api/companies';
 import { useSession } from '../context/SessionContext';
+import { tryRegisterPushToken } from '../push/registerPushToken';
 import { colors } from '../theme';
 import type { RootStackParamList } from '../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
 export function HomeScreen({ navigation }: Props) {
-  const { setTokens, setSelectedCompanyId } = useSession();
+  const { setTokens, setSelectedCompanyId, takeOpenCreateCompanyAfterAuth } =
+    useSession();
   const [rows, setRows] = useState<CompanyRow[]>([]);
   const [loading, setLoading] = useState(false);
-  const [companyName, setCompanyName] = useState('');
   const [invite, setInvite] = useState('');
 
   const load = useCallback(async () => {
@@ -42,20 +39,18 @@ export function HomeScreen({ navigation }: Props) {
   }, []);
 
   React.useEffect(() => {
-    const u = navigation.addListener('focus', load);
+    const u = navigation.addListener('focus', () => {
+      void load();
+      void tryRegisterPushToken();
+    });
     return u;
   }, [navigation, load]);
 
-  async function onCreate() {
-    if (!companyName.trim()) return;
-    try {
-      await createCompany(companyName.trim());
-      setCompanyName('');
-      await load();
-    } catch (e) {
-      Alert.alert('Ошибка', String(e));
+  React.useEffect(() => {
+    if (takeOpenCreateCompanyAfterAuth()) {
+      navigation.navigate('CreateCompany');
     }
-  }
+  }, [navigation, takeOpenCreateCompanyAfterAuth]);
 
   async function onJoin() {
     if (!invite.trim()) return;
@@ -81,15 +76,21 @@ export function HomeScreen({ navigation }: Props) {
         }
         ListHeaderComponent={
           <View style={styles.card}>
-            <Text style={styles.section}>Создать компанию (директор)</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Название"
-              value={companyName}
-              onChangeText={setCompanyName}
-            />
-            <TouchableOpacity style={styles.btn} onPress={onCreate}>
-              <Text style={styles.btnText}>Создать и получить код</Text>
+            <TouchableOpacity
+              style={styles.createRow}
+              onPress={() => navigation.navigate('CreateCompany')}
+              activeOpacity={0.85}
+            >
+              <View style={styles.createRowLeft}>
+                <View style={styles.createIconWrap}>
+                  <MaterialIcons name="domain" size={22} color={colors.primary} />
+                </View>
+                <View>
+                  <Text style={styles.createTitle}>Создать компанию</Text>
+                  <Text style={styles.createSub}>Новая организация и код приглашения</Text>
+                </View>
+              </View>
+              <MaterialIcons name="chevron-right" size={26} color={colors.subtext} />
             </TouchableOpacity>
             <Text style={[styles.section, { marginTop: 20 }]}>Войти по коду</Text>
             <TextInput
@@ -118,7 +119,11 @@ export function HomeScreen({ navigation }: Props) {
             <View style={{ flex: 1 }}>
               <Text style={styles.rowTitle}>{item.companyName}</Text>
               <Text style={styles.rowSub}>
-                {item.role === 'DIRECTOR' ? 'Директор' : 'Сотрудник'}
+                {item.role === 'DIRECTOR'
+                  ? 'Директор'
+                  : item.role === 'MASTER'
+                    ? 'Мастер'
+                    : 'Сотрудник'}
                 {item.inviteCode ? ` · код: ${item.inviteCode}` : ''}
               </Text>
             </View>
@@ -153,10 +158,33 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     padding: 16,
     backgroundColor: colors.card,
-    borderRadius: 12,
+    borderRadius: 16,
     borderWidth: 1,
     borderColor: colors.border,
   },
+  createRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+    paddingHorizontal: 4,
+  },
+  createRowLeft: { flexDirection: 'row', alignItems: 'center', flex: 1 },
+  createIconWrap: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    marginRight: 12,
+    backgroundColor: colors.surfaceLow,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  createTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: colors.text,
+  },
+  createSub: { marginTop: 2, fontSize: 13, color: colors.subtext },
   section: { fontWeight: '600', marginBottom: 8, color: colors.text },
   input: {
     borderWidth: 1,

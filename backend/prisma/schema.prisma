@@ -9,6 +9,7 @@ datasource db {
 
 enum MembershipRole {
   DIRECTOR
+  MASTER
   EMPLOYEE
 }
 
@@ -40,6 +41,24 @@ model User {
   messages     Message[]
   dayEntries   DayEntry[]
   inviteRedemptions InviteRedemption[]
+  pushTokens   PushToken[]
+  brigadesLed  Brigade[]    @relation("BrigadeMaster")
+  brigadeLinks BrigadeMember[]
+}
+
+/// FCM (native) или Expo Push Token для уведомлений.
+model PushToken {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  /// `expo` | `fcm`
+  tokenKind String   @default("fcm") @map("token_kind")
+  platform  String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([userId])
 }
 
 model Company {
@@ -54,6 +73,36 @@ model Company {
   inviteCodes   InviteCode[]
   dayEntries    DayEntry[]
   conversations Conversation[]
+  brigades      Brigade[]
+}
+
+model Brigade {
+  id        String   @id @default(uuid())
+  companyId String   @map("company_id")
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  name      String   @default("")
+  masterId  String   @map("master_id")
+  master    User     @relation("BrigadeMaster", fields: [masterId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  members BrigadeMember[]
+
+  @@unique([companyId, masterId])
+  @@index([companyId])
+  @@map("brigades")
+}
+
+model BrigadeMember {
+  id        String  @id @default(uuid())
+  brigadeId String  @map("brigade_id")
+  brigade   Brigade @relation(fields: [brigadeId], references: [id], onDelete: Cascade)
+  userId    String  @map("user_id")
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([brigadeId, userId])
+  @@index([userId])
+  @@map("brigade_members")
 }
 
 model InviteCode {

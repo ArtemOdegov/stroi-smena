@@ -139,7 +139,9 @@ export function LoginScreen({ navigation }: Props) {
 
             <TouchableOpacity
               style={styles.ctaSecondary}
-              onPress={() => navigation.navigate('Register')}
+              onPress={() =>
+                navigation.navigate('Register', { flow: 'createCompany' })
+              }
               activeOpacity={0.92}
             >
               <MaterialIcons name="business" size={22} color={colors.primary} />
@@ -148,7 +150,7 @@ export function LoginScreen({ navigation }: Props) {
 
             <TouchableOpacity
               style={styles.ctaGhost}
-              onPress={() => navigation.navigate('Register')}
+              onPress={() => navigation.navigate('Register', { flow: 'invite' })}
               activeOpacity={0.92}
             >
               <MaterialIcons name="vpn-key" size={22} color={colors.secondary} />

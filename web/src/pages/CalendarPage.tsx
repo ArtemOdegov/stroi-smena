@@ -28,7 +28,7 @@ export function CalendarPage() {
       const list = await api<CompanyRow[]>('/companies/me');
       const row = list.find((c) => c.companyId === companyId);
       setRole(row?.role ?? null);
-      if (row?.role === 'DIRECTOR') {
+      if (row?.role === 'DIRECTOR' || row?.role === 'MASTER') {
         try {
           setMembers(await api<Member[]>(`/companies/${companyId}/members`));
         } catch {
@@ -46,7 +46,10 @@ export function CalendarPage() {
       setErr('');
       try {
         const q = new URLSearchParams({ from, to });
-        if (role === 'DIRECTOR' && filterUserId.trim()) {
+        if (
+          (role === 'DIRECTOR' || role === 'MASTER') &&
+          filterUserId.trim()
+        ) {
           q.set('userId', filterUserId);
         }
         const data = await api<DayEntry[]>(
@@ -63,7 +66,7 @@ export function CalendarPage() {
     <div className="page">
       <div className="nav">
         <Link to="/">← Компании</Link>
-        {role === 'DIRECTOR' ? (
+        {role === 'DIRECTOR' || role === 'MASTER' ? (
           <Link to={`/c/${companyId}/members`}>Сотрудники</Link>
         ) : null}
       </div>
@@ -74,7 +77,7 @@ export function CalendarPage() {
           Месяц
           <input type="month" value={ym} onChange={(e) => setYm(e.target.value)} />
         </label>
-        {role === 'DIRECTOR' ? (
+        {role === 'DIRECTOR' || role === 'MASTER' ? (
           <label>
             Сотрудник (пусто = вся команда)
             <select

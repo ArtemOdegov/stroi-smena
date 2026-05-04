@@ -12,6 +12,7 @@ import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { CurrentUser, AuthUser } from '../common/decorators/current-user.decorator';
 import { ChatService } from './chat.service';
 import { ChatGateway } from './chat.gateway';
+import { PushService } from '../push/push.service';
 import { CreateDirectDto } from './dto/create-direct.dto';
 import { SendMessageDto } from './dto/send-message.dto';
 
@@ -20,6 +21,7 @@ export class ChatController {
   constructor(
     private readonly chat: ChatService,
     private readonly gateway: ChatGateway,
+    private readonly push: PushService,
   ) {}
 
   @Get('conversations')
@@ -69,6 +71,13 @@ export class ChatController {
       dto.attachmentType,
     );
     this.gateway.emitMessage(conversationId, msg);
+    void this.push.notifyNewChatMessage({
+      conversationId,
+      senderId: user.userId,
+      senderName: msg.senderName,
+      body: msg.body,
+      attachmentUrl: msg.attachmentUrl,
+    });
     return msg;
   }
 

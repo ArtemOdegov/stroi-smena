@@ -80,14 +80,18 @@ export function DashboardPage() {
       {rows.map((c) => (
         <div key={c.companyId} className="card">
           <strong>{c.companyName}</strong> —{' '}
-          {c.role === 'DIRECTOR' ? 'директор' : 'сотрудник'}
+          {c.role === 'DIRECTOR'
+            ? 'директор'
+            : c.role === 'MASTER'
+              ? 'мастер'
+              : 'сотрудник'}
           {c.inviteCode ? (
             <p>
               Код приглашения: <code>{c.inviteCode}</code>
             </p>
           ) : null}
           <div className="nav">
-            {c.role === 'DIRECTOR' ? (
+            {c.role === 'DIRECTOR' || c.role === 'MASTER' ? (
               <>
                 <Link to={`/c/${c.companyId}/members`}>Сотрудники</Link>
                 <Link to={`/c/${c.companyId}/calendar`}>Календарь команды</Link>

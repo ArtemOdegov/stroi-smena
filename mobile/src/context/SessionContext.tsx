@@ -24,6 +24,9 @@ type Ctx = Session & {
   setTokens: (t: Tokens | null) => void;
   setSelectedCompanyId: (id: string | null) => void;
   getAccessToken: () => string | null;
+  /** После регистрации с «Создать компанию» — Home один раз откроет CreateCompany (без AsyncStorage). */
+  markOpenCreateCompanyAfterAuth: () => void;
+  takeOpenCreateCompanyAfterAuth: () => boolean;
 };
 
 const SessionContext = createContext<Ctx | null>(null);
@@ -39,6 +42,18 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
   const tokensRef = useRef<Tokens | null>(null);
   tokensRef.current = tokens;
 
+  const openCreateCompanyAfterAuthRef = useRef(false);
+
+  const markOpenCreateCompanyAfterAuth = useCallback(() => {
+    openCreateCompanyAfterAuthRef.current = true;
+  }, []);
+
+  const takeOpenCreateCompanyAfterAuth = useCallback((): boolean => {
+    const v = openCreateCompanyAfterAuthRef.current;
+    openCreateCompanyAfterAuthRef.current = false;
+    return v;
+  }, []);
+
   useEffect(() => {
     (async () => {
       try {
@@ -49,6 +64,8 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
           setTokensState(s.tokens);
           setSelectedCompanyId(s.selectedCompanyId);
         }
+      } catch {
+        /* нативный модуль недоступен (Expo Go / сборка) — работаем без восстановления сессии с диска */
       } finally {
         setHydrated(true);
       }
@@ -58,7 +75,9 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!hydrated) return;
     const s: Session = { tokens, selectedCompanyId };
-    void AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(s));
+    void AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(s)).catch(() => {
+      /* игнорируем ошибку legacy storage — сессия в памяти до перезапуска */
+    });
   }, [tokens, selectedCompanyId, hydrated]);
 
   const setTokens = useCallback((t: Tokens | null) => {
@@ -101,8 +120,18 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
       setTokens,
       setSelectedCompanyId: setCompany,
       getAccessToken,
+      markOpenCreateCompanyAfterAuth,
+      takeOpenCreateCompanyAfterAuth,
     }),
-    [tokens, selectedCompanyId, setTokens, setCompany, getAccessToken],
+    [
+      tokens,
+      selectedCompanyId,
+      setTokens,
+      setCompany,
+      getAccessToken,
+      markOpenCreateCompanyAfterAuth,
+      takeOpenCreateCompanyAfterAuth,
+    ],
   );
 
   if (!hydrated) {

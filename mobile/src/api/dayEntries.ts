@@ -29,6 +29,13 @@ export function listDayEntries(
   );
 }
 
+/** Все записи компании за один календарный день (любой участник). */
+export function listDayEntriesForDate(companyId: string, date: string) {
+  return apiFetch<DayEntryDto[]>(
+    `/companies/${companyId}/day-entries/${encodeURIComponent(date)}`,
+  );
+}
+
 export function upsertDayEntry(
   companyId: string,
   date: string,

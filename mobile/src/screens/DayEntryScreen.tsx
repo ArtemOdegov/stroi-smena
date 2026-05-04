@@ -29,6 +29,11 @@ import {
 import { me } from '../api/auth';
 import { enqueueDaySave } from '../sync/offlineQueue';
 import { GeoPickerModal } from '../components/GeoPickerModal';
+import {
+  CompanyBottomTabBar,
+  companyTabBarTotalHeight,
+} from '../components/CompanyBottomTabBar';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { resolveImageUri } from '../util/resolveImageUri';
 import { colors } from '../theme';
 import type { RootStackParamList } from '../navigation/types';
@@ -81,8 +86,10 @@ function ColleagueCard({
   );
 }
 
-export function DayEntryScreen({ route }: Props) {
-  const { companyId, date } = route.params;
+export function DayEntryScreen({ route, navigation }: Props) {
+  const { companyId, companyName, date } = route.params;
+  const insets = useSafeAreaInsets();
+  const tabPad = companyTabBarTotalHeight(insets.bottom);
   const [others, setOthers] = useState<DayEntryDto[]>([]);
   const [notes, setNotes] = useState('');
   const [photos, setPhotos] = useState<LocalPhoto[]>([]);
@@ -252,10 +259,11 @@ export function DayEntryScreen({ route }: Props) {
   }
 
   return (
+    <View style={styles.screenWrap}>
     <Pressable style={styles.pressRoot} onPress={Keyboard.dismiss}>
       <ScrollView
         style={styles.root}
-        contentContainerStyle={{ paddingBottom: 40 }}
+        contentContainerStyle={{ paddingBottom: 40 + tabPad }}
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="on-drag"
         nestedScrollEnabled
@@ -334,6 +342,13 @@ export function DayEntryScreen({ route }: Props) {
           <Text style={styles.saveText}>Сохранить</Text>
         </TouchableOpacity>
       </ScrollView>
+    </Pressable>
+      <CompanyBottomTabBar
+        navigation={navigation}
+        companyId={companyId}
+        companyName={companyName}
+        active="calendar"
+      />
 
       <GeoPickerModal
         visible={mapOpen}
@@ -366,7 +381,7 @@ export function DayEntryScreen({ route }: Props) {
           <Text style={styles.previewHint}>Нажмите, чтобы закрыть</Text>
         </Pressable>
       </Modal>
-    </Pressable>
+    </View>
   );
 }
 
@@ -377,6 +392,7 @@ const previewImageBoxStyle = {
 };
 
 const styles = StyleSheet.create({
+  screenWrap: { flex: 1, backgroundColor: colors.bg },
   pressRoot: { flex: 1, backgroundColor: colors.bg },
   root: { flex: 1, backgroundColor: colors.bg, padding: 16 },
   date: { fontSize: 18, fontWeight: '700', marginBottom: 12, color: colors.text },

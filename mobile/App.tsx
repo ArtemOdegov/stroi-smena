@@ -20,10 +20,14 @@ import { LoginScreen } from './src/screens/LoginScreen';
 import { RegisterScreen } from './src/screens/RegisterScreen';
 import { HomeScreen } from './src/screens/HomeScreen';
 import { CalendarScreen } from './src/screens/CalendarScreen';
+import { ActivityDetailScreen } from './src/screens/ActivityDetailScreen';
 import { DayEntryScreen } from './src/screens/DayEntryScreen';
 import { ChatListScreen } from './src/screens/ChatListScreen';
 import { ChatThreadScreen } from './src/screens/ChatThreadScreen';
 import { ColleaguesScreen } from './src/screens/ColleaguesScreen';
+import { TeamAccessScreen } from './src/screens/TeamAccessScreen';
+import { CompanySettingsScreen } from './src/screens/CompanySettingsScreen';
+import { CreateCompanyScreen } from './src/screens/CreateCompanyScreen';
 import { flushPendingQueue } from './src/sync/offlineQueue';
 import type { RootStackParamList } from './src/navigation/types';
 import { colors } from './src/theme';
@@ -83,9 +87,19 @@ function NavigationRoot() {
           options={{ title: 'Компании', headerBackVisible: false }}
         />
         <Stack.Screen
+          name="CreateCompany"
+          component={CreateCompanyScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
           name="Calendar"
           component={CalendarScreen}
-          options={({ route }) => ({ title: route.params.companyName })}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="ActivityDetail"
+          component={ActivityDetailScreen}
+          options={{ headerShown: false }}
         />
         <Stack.Screen
           name="DayEntry"
@@ -95,17 +109,27 @@ function NavigationRoot() {
         <Stack.Screen
           name="ChatList"
           component={ChatListScreen}
-          options={{ title: 'Чаты' }}
+          options={{ headerShown: false }}
         />
         <Stack.Screen
           name="ChatThread"
           component={ChatThreadScreen}
-          options={({ route }) => ({ title: route.params.title })}
+          options={{ headerShown: false }}
         />
         <Stack.Screen
           name="Colleagues"
           component={ColleaguesScreen}
-          options={{ title: 'Коллеги' }}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="TeamAccess"
+          component={TeamAccessScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="CompanySettings"
+          component={CompanySettingsScreen}
+          options={{ headerShown: false }}
         />
       </Stack.Navigator>
     </NavigationContainer>

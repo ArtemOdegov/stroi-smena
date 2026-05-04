@@ -1,3 +1,5 @@
+# Прод: бэкапы БД — scripts/backup-postgres.sh; миграции — backend/prisma/migrate deploy;
+# базовый мониторинг — GET /health у API и docker compose logs.
 services:
   postgres:
     image: postgres:16-alpine

@@ -50,6 +50,19 @@ export class CompaniesService {
     return m;
   }
 
+  private isManagerRole(role: MembershipRole): boolean {
+    return role === MembershipRole.DIRECTOR || role === MembershipRole.MASTER;
+  }
+
+  /** Директор или мастер: просмотр состава, часть операций управления. */
+  async assertManager(userId: string, companyId: string) {
+    const m = await this.assertMember(userId, companyId);
+    if (!this.isManagerRole(m.role)) {
+      throw new ForbiddenException('Director or master only');
+    }
+    return m;
+  }
+
   async create(userId: string, dto: CreateCompanyDto) {
     const code = await this.uniqueInviteCode();
     const company = await this.prisma.$transaction(async (tx) => {
@@ -201,8 +214,8 @@ export class CompaniesService {
     }));
   }
 
-  async listMembers(directorUserId: string, companyId: string) {
-    await this.assertDirector(directorUserId, companyId);
+  async listMembers(actorUserId: string, companyId: string) {
+    await this.assertManager(actorUserId, companyId);
     const members = await this.prisma.membership.findMany({
       where: { companyId },
       include: { user: { select: { id: true, email: true, name: true } } },
@@ -219,13 +232,16 @@ export class CompaniesService {
   }
 
   async updateMember(
-    directorUserId: string,
+    actorUserId: string,
     companyId: string,
     targetUserId: string,
     dto: UpdateMemberDto,
   ) {
-    await this.assertDirector(directorUserId, companyId);
-    if (targetUserId === directorUserId) {
+    const actor = await this.assertMember(actorUserId, companyId);
+    if (!this.isManagerRole(actor.role)) {
+      throw new ForbiddenException('Director or master only');
+    }
+    if (targetUserId === actorUserId) {
       throw new BadRequestException('Cannot change own membership this way');
     }
     const target = await this.prisma.membership.findUnique({
@@ -235,6 +251,17 @@ export class CompaniesService {
     });
     if (!target) {
       throw new NotFoundException('Member not found');
+    }
+    if (actor.role === MembershipRole.MASTER) {
+      if (
+        target.role === MembershipRole.DIRECTOR ||
+        target.role === MembershipRole.MASTER
+      ) {
+        throw new ForbiddenException('Master cannot modify this member');
+      }
+      if (dto.role !== undefined) {
+        throw new ForbiddenException('Master cannot change roles');
+      }
     }
     const data: Prisma.MembershipUpdateInput = {};
     if (dto.role) data.role = dto.role;

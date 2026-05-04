@@ -82,3 +82,12 @@ export type DayEntry = {
   photos: { id: string; storageKey: string; url: string }[];
   updatedAt: string;
 };
+
+export type Brigade = {
+  id: string;
+  companyId: string;
+  name: string;
+  masterUserId: string;
+  masterName: string;
+  members: Member[];
+};

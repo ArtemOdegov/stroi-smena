@@ -22,9 +22,9 @@ import type { RootStackParamList } from '../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Register'>;
 
-export function RegisterScreen({ navigation }: Props) {
+export function RegisterScreen({ navigation, route }: Props) {
   const insets = useSafeAreaInsets();
-  const { setTokens } = useSession();
+  const { setTokens, markOpenCreateCompanyAfterAuth } = useSession();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -38,6 +38,9 @@ export function RegisterScreen({ navigation }: Props) {
         password,
         name: name.trim(),
       });
+      if (route.params?.flow === 'createCompany') {
+        markOpenCreateCompanyAfterAuth();
+      }
       setTokens(t);
     } catch (e) {
       Alert.alert('Ошибка', String(e));

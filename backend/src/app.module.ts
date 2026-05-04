@@ -6,6 +6,7 @@ import { CompaniesModule } from './companies/companies.module';
 import { StorageModule } from './storage/storage.module';
 import { DayEntriesModule } from './day-entries/day-entries.module';
 import { ChatModule } from './chat/chat.module';
+import { BrigadesModule } from './brigades/brigades.module';
 import { PushModule } from './push/push.module';
 import { HealthController } from './health.controller';
 
@@ -19,6 +20,7 @@ import { HealthController } from './health.controller';
     StorageModule,
     DayEntriesModule,
     ChatModule,
+    BrigadesModule,
   ],
   controllers: [HealthController],
 })

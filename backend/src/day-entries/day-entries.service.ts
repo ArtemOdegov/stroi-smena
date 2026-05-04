@@ -53,7 +53,9 @@ export class DayEntriesService {
     const fromD = this.parseDay(from);
     const toD = this.parseDay(to);
 
-    if (m.role === MembershipRole.DIRECTOR && filterUserId?.trim()) {
+    const canFilterByUser =
+      m.role === MembershipRole.DIRECTOR || m.role === MembershipRole.MASTER;
+    if (canFilterByUser && filterUserId?.trim()) {
       const fid = filterUserId.trim();
       if (fid !== userId) {
         const other = await this.prisma.membership.findUnique({
@@ -112,8 +114,11 @@ export class DayEntriesService {
     if (!m || m.status !== MembershipStatus.ACTIVE) {
       throw new ForbiddenException();
     }
-    if (m.role !== MembershipRole.DIRECTOR) {
-      throw new ForbiddenException('Director only');
+    if (
+      m.role !== MembershipRole.DIRECTOR &&
+      m.role !== MembershipRole.MASTER
+    ) {
+      throw new ForbiddenException('Director or master only');
     }
     const date = this.parseDay(dateStr);
     const entry = await this.prisma.dayEntry.findUnique({
